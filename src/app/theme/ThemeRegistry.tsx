@@ -22,9 +22,17 @@ const themeOptions: ThemeOptions = {
     },
     text: {
       primary: "#300000",
+      secondary:"#cfcfcf"
     },
   },
   components: {
+    MuiDivider: {
+      styleOverrides: {
+        root: {
+          borderColor: '#505559', // Set your desired color here
+        },
+      },
+    },
     MuiAppBar: {
       styleOverrides: {
         colorPrimary: {

@@ -3,9 +3,13 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import ThemeRegistry from "./theme/ThemeRegistry";
+import { AppBar, Box, Button, CssBaseline, IconButton, ThemeProvider, Toolbar, Typography } from "@mui/material";
+import ProjAppBar from "./components/ProjAppBar";
+
 // import ThemeRegistry from "../../theme/ThemeRegistry";
 // import theme from "../utils/theme";
 // import { ThemeProvider } from "@mui/system";
+import MenuIcon from "@mui/icons-material/Menu";
 
 const inter = Inter({ subsets: ["latin"] });
 
