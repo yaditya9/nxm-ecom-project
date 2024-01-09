@@ -4,7 +4,7 @@ import React from "react";
 import { AppBar, Box, Button, IconButton, Link, TextField, Toolbar, Typography } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ProjAppBar from "./components/ProjAppBar";
-import '@/app/models/db';
+/* import '@/app/models/db'; */
 // import Link from "next/link";
 // import { ThemeProvider, createTheme } from "@mui/material/styles";
 // import theme from "./theme";

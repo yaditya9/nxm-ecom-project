@@ -10,61 +10,110 @@ import {
 import React from "react";
 import ProjAppBar from "./ProjAppBar";
 import { useState } from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import axios from "axios";
 /* import { useRouter } from "next/router"; */
-const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  /* const router = useRouter(); */
+const LoginComponent = () => {
+  const [result, setResult] = React.useState<string>("");
+  const [error, setError] = React.useState<string>("");
 
-  const handleSubmit = async () => {
-    const response = await fetch("/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      setErrorMessage(data.message);
-    } else {
-      /* router.push("/home"); */ // Redirect to home page
+  const login = async (user: any) => {
+  console.log(`Login function called with values ${JSON.stringify(user)}`)
+  const url = "http://localhost:3001/login";
+    try {
+      const response = await axios.post(url, user);
+      console.log(`${JSON.stringify(response.data)}`);
+      setResult(response.data.result);
+      setError("");
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        setError(error.message);
+        setResult("");
+        console.log(error);
+      } else {
+        console.log(error);
+      }
     }
-  };
-
+  }
+  
+  const formik = useFormik({
+    initialValues: {
+     
+      email: "",
+      password: "",
+      
+    },
+    validationSchema: Yup.object({
+      
+      email: Yup.string()
+        .email("Invalid email address")
+        .required("Email is required"),
+      password: Yup.string()
+        .min(6, "password must be 6 characters or more")
+        .required("Password is required"),
+      
+    }),
+    onSubmit: async (values) => {
+      // setTimeout(() => {
+      //   alert(JSON.stringify(values, null, 2));
+      // }, 5000);
+      // alert(JSON.stringify(values, null, 2));
+      await login(values);
+    },
+  });
   return (
     <React.Fragment>
+      <form onSubmit={formik.handleSubmit}>
       <Container>
         <Grid container spacing={2} pt={2} px={25}>
           <Grid item xs={12}>
             <Typography variant="h4">Login</Typography>
           </Grid>
+          {result && (
+            <Grid item xs={12} color={"green"}>
+              <Typography variant="h6">{result}</Typography>
+            </Grid>
+          )}
+          {error && (
+            <Grid item xs={12} color={"red"}>
+              <Typography variant="h6">{error}</Typography>
+            </Grid>
+          )}
 
           <Grid item xs={12}>
             <TextField
               fullWidth
-              id="outlined-basic"
+              id="email"
+              name="email"
               label="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               variant="outlined"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              error={Boolean(formik.errors.email)}
+              helperText={formik.errors.email}
             />
           </Grid>
           <Grid item xs={12}>
             <TextField
               fullWidth
-              id="outlined-basic"
-              type="password"
+              id="password"
+              name="password"
               label="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               variant="outlined"
+              type="password"
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              error={Boolean(formik.errors.password)}
+              helperText={formik.errors.password}
             />
-            {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+            {/* {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>} */}
           </Grid>
           <Grid item xs={12}>
-            <Button variant="contained" onClick={handleSubmit} fullWidth>
+            <Button variant="contained"
+              fullWidth
+              type="submit"
+              disabled={!formik.isValid || formik.isSubmitting}>
               Login
             </Button>
           </Grid>
@@ -80,8 +129,9 @@ const Login = () => {
           </Grid>
         </Grid>
       </Container>
+      </form>
     </React.Fragment>
   );
 };
 
-export default Login;
+export default LoginComponent;

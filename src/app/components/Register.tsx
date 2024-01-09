@@ -10,136 +10,165 @@ import {
 import React from "react";
 import ProjAppBar from "./ProjAppBar";
 import { useState } from "react";
-
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import axios from "axios";
+import { User } from "../models/user";
 
 const Register = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [name, setName] = useState("")
-  const [nameError, setNameError] = useState("");
-  const [successMessage, setSuccessMessage] = useState('');
-  const validate = () => {
-    let isValid = true;
-
-    if (!email) {
-      setEmailError("Please enter email");
-      isValid = false;
-    } else {
-      setEmailError("");
-    }
-
-    if (!password) {
-      setPasswordError("Please enter password");
-      isValid = false;
-    } else {
-      setPasswordError("");
-    }
-    if (!name) {
-        setNameError("Please enter your name");
-        isValid = false;
+  const [result, setResult] = React.useState<string>("");
+  const [error, setError] = React.useState<string>("");
+  const register = async (user: User) => {
+    const url = "http://localhost:3001/register";
+    try {
+      const response = await axios.post(url, user);
+      console.log(`${JSON.stringify(response.data)}`);
+      setResult(response.data.result);
+      setError("");
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        setError(error.message);
+        setResult("");
+        console.log(error);
       } else {
-        setNameError("");
+        console.log(error);
       }
-
-    return isValid;
+    }
   };
-  const [errorMessage, setErrorMessage] = useState('');
-  const handleSubmit = async () => {
-    if (!validate()) return;
-    const response = await fetch("/api/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name, email, password }),
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-        setErrorMessage(data.message); // Set error message from API response
-        setSuccessMessage('');
-      } else {
-        console.log(data); // handle the response
-        setSuccessMessage('Registration successful');
-        setErrorMessage('');
-      }
-    
-  };
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+    validationSchema: Yup.object({
+      name: Yup.string()
+        .min(2, "Must be 2 characters or more")
+        .max(25, "Must be 25 characters or less")
+        .required("Name is required"),
+      email: Yup.string()
+        .email("Invalid email address")
+        .required("Email is required"),
+      password: Yup.string()
+        .min(6, "password must be 6 characters or more")
+        .required("Password is required"),
+      confirmPassword: Yup.string()
+        .min(6, "password must be 6 characters or more")
+        .required("Password is required"),
+    }),
+    onSubmit: async (values) => {
+      // setTimeout(() => {
+      //   alert(JSON.stringify(values, null, 2));
+      // }, 5000);
+      // alert(JSON.stringify(values, null, 2));
+      await register(values);
+    },
+  });
 
   return (
     <React.Fragment>
-      <Container>
-        <Grid container spacing={2}  sx={{ pt: 2, px: { xs: 2, sm: 10, md: 25 } }}/* pt={2} px={25} */>
-          <Grid item xs={12}>
-            <Typography variant="h4">Register</Typography>
-            {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-            {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-          </Grid>
-          <Grid item xs={12}>
+      <form onSubmit={formik.handleSubmit}>
+        <Container>
+          <Grid container
+            spacing={2}  sx={{ pt: 2, px: { xs: 2, sm: 10, md: 25 } }}
+          >
+            <Grid item xs={12}>
+              <Typography variant="h4">Register</Typography>
+            </Grid>
+          
+          {result && (
+            <Grid item xs={12} color={"green"}>
+              <Typography variant="h6">{result}</Typography>
+            </Grid>
+          )}
+          {error && (
+            <Grid item xs={12} color={"red"}>
+              <Typography variant="h6">{error}</Typography>
+            </Grid>
+          )}
+          <Grid item  xs={12} >
             <TextField
               fullWidth
-              /*  id="outlined-basic" */
-              label="Enter Name "
-              error={!!nameError}
-              helperText={nameError}
+              id="name"
+              name="name"
+              label="Name"
               variant="outlined"
-              onChange={(e) => setName(e.target.value)}
-              value={name}
+              value={formik.values.name}
+              onChange={formik.handleChange}
+              error={Boolean(formik.errors.name)}
+              helperText={formik.errors.name}
             />
           </Grid>
           <Grid item xs={12}>
             <TextField
               fullWidth
-              type="email"
-              /* id="outlined-basic" */
-              label="Enter email "
-              error={!!emailError}
-              helperText={emailError}
-              value={email}
+              id="email"
+              name="email"
+              label="Email"
               variant="outlined"
-              onChange={(e) => setEmail(e.target.value)}
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              error={Boolean(formik.errors.email)}
+              helperText={formik.errors.email}
             />
           </Grid>
           <Grid item xs={12}>
             <TextField
               fullWidth
+              id="password"
+              name="password"
+              label="Password"
+              variant="outlined"
               type="password"
-              /* id="outlined-basic" */
-              error={!!passwordError}
-              helperText={passwordError}
-              value={password}
-              label="Enter Password "
-              variant="outlined"
-              onChange={(e) => setPassword(e.target.value)}
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              error={Boolean(formik.errors.password)}
+              helperText={formik.errors.password}
             />
           </Grid>
           <Grid item xs={12}>
             <TextField
               fullWidth
-              /* id="outlined-basic" */
-              label="Confirm Password "
+              id="confirmPassword"
+              name="confirmPassword"
+              label="Confirm password"
               variant="outlined"
+              type="password"
+              value={formik.values.confirmPassword}
+              onChange={formik.handleChange}
+              error={Boolean(formik.errors.confirmPassword)}
+              helperText={formik.errors.confirmPassword}
             />
           </Grid>
           <Grid item xs={12}>
-            <Button variant="contained" fullWidth onClick={handleSubmit}>
+            <Button
+              variant="contained"
+              fullWidth
+              type="submit"
+              disabled={!formik.isValid || formik.isSubmitting}
+            >
               Register
             </Button>
           </Grid>
-        </Grid>
-        <Grid container spacing={2} sx={{ pt: 2, px: { xs: 2, sm: 10, md: 25 } }}/* pt={2} px={25} */>
-          <Grid item xs={2.75}>
-            <Typography>Already have an account?</Typography>
+           </Grid> 
+          <Grid
+            container
+            spacing={2}
+            pt={2}
+            px={{ sm: 25 }} /* pt={2} px={25} */
+          >
+            <Grid item xs={2.75}>
+              <Typography>Already have an account?</Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Link href="/login" underline="hover">
+                {"Login"}
+              </Link>
+            </Grid>
           </Grid>
-          <Grid item xs={6}>
-            <Link href="/login" underline="hover">
-              {"Login"}
-            </Link>
-          </Grid>
-        </Grid>
-      </Container>
+        </Container>
+      </form>
     </React.Fragment>
   );
 };
