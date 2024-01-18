@@ -14,6 +14,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import InfoIcon from "@mui/icons-material/Info";
+import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
 const OdAppBar = () => {
   return (
     <React.Fragment>
@@ -40,7 +41,7 @@ const OdAppBar = () => {
                   Payments
                 </Typography>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <InfoIcon sx={{ fontSize: 20, mr: 0.5, color: "#4C4C4C" }} />{" "}
+                  <HelpOutlineOutlinedIcon sx={{ fontSize: 20, mr: 0.5, color: "#4C4C4C" }} />{" "}
                   {/* Adjust icon size and margin as needed */}
                   <Typography
                     variant="subtitle1"

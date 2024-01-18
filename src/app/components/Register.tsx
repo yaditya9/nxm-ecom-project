@@ -14,16 +14,19 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { User } from "../models/user";
+import { useRouter } from "next/navigation";
 
 const Register = () => {
   const [result, setResult] = React.useState<string>("");
   const [error, setError] = React.useState<string>("");
+  const router = useRouter();
   const register = async (user: User) => {
     const url = "http://localhost:3001/register";
     try {
       const response = await axios.post(url, user);
       console.log(`${JSON.stringify(response.data)}`);
       setResult(response.data.result);
+      router.push("/login");
       setError("");
     } catch (error) {
       if (axios.isAxiosError(error)) {

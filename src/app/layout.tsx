@@ -5,7 +5,7 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import ThemeRegistry from "./theme/ThemeRegistry";
 import { AppBar, Box, Button, CssBaseline, IconButton, ThemeProvider, Toolbar, Typography } from "@mui/material";
 import ProjAppBar from "./components/ProjAppBar";
-
+import { GlobalContextProvider } from "./contexts/GlobalContext";
 // import ThemeRegistry from "../../theme/ThemeRegistry";
 // import theme from "../utils/theme";
 // import { ThemeProvider } from "@mui/system";
@@ -23,7 +23,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       {/* <body className={inter.className}>{children}</body> */}
       <ThemeRegistry>
+        <GlobalContextProvider>
         <body className={inter.className}>{children}</body>
+        </GlobalContextProvider>
+        
       </ThemeRegistry>
     </html>
   );

@@ -13,10 +13,15 @@ import { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useGlobalContext } from "../contexts/GlobalContext";
 /* import { useRouter } from "next/router"; */
 const LoginComponent = () => {
   const [result, setResult] = React.useState<string>("");
   const [error, setError] = React.useState<string>("");
+  const { setUsername, setAccessToken } = useGlobalContext();
+  var cookie = require("cookie-cutter");
+  const router = useRouter();
 
   const login = async (user: any) => {
     console.log(`Login function called with values ${JSON.stringify(user)}`);
@@ -24,7 +29,11 @@ const LoginComponent = () => {
     try {
       const response = await axios.post(url, user);
       console.log(`JWT token: ${JSON.stringify(response.data)}`);
-      setResult(response.data.result);
+      setResult(/* response.data.result */ "Login Successful!");
+      cookie.set("access-token", response.data.result)
+      setAccessToken(response.data.token);
+      setUsername(response.data.username);
+      router.push("/");
       setError("");
       /* console.log(`JWT token: ${response.data.result}`) */
     } catch (error) {
@@ -75,8 +84,12 @@ const LoginComponent = () => {
             {result && (
               <Grid item xs={12} color={"green"}>
                 <Typography variant="h6">
-                  {/* {result} */} Token Generated!
+                   {result}  {/* Token Generated! */}
                 </Typography>
+                {/* <Typography variant="body1" sx={{ wordBreak: 'break-all' }}>
+                   {result}  
+                </Typography> */}
+
               </Grid>
             )}
             {error && (

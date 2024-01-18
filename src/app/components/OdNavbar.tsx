@@ -7,6 +7,7 @@ import ListItemText from '@mui/material/ListItemText';
 import HomeIcon from '@mui/icons-material/Home'; // Import other icons similarly
 import Paper from '@mui/material/Paper';
 import { Box, Typography } from '@mui/material';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 
 // Define your navbar items here
 const navbarItems = [
@@ -62,6 +63,7 @@ const SimpleNavbar = () => {
           </ListItem>
         ))}
       </List>
+      
     </Box>
     </React.Fragment>
   );
